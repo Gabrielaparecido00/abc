@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        input[type="text"], input[type="password"], input[type="number"], select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button[type="button"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button[type="button"]:hover {
+            background-color: #45a049;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sistema de Estoque</h1>
+    <div id="loginForm">
+        <label for="usuario">Usuário:</label>
+        <input type="text" id="usuario" name="usuario">
+
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha">
+
+        <button type="button" onclick="submitLogin()">Login</button>
+    </div>
+
+    <div id="dashboard" class="hidden">
+        <form id="entradaForm">
+            <h2>Formulário de Entrada</h2>
+            <label for="tipoItem">Tipo de Item:</label>
+            <select id="tipoItem" name="tipoItem">
+                <option value="Vestuário">Vestuário</option>
+                <option value="Equipamento">Equipamento</option>
+            </select>
+
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome">
+
+            <label for="tamanho">Tamanho:</label>
+            <input type="text" id="tamanho" name="tamanho">
+
+            <label for="cor">Cor:</label>
+            <input type="text" id="cor" name="cor">
+
+            <label for="condicao">Condição:</label>
+            <select id="condicao" name="condicao">
+                <option value="Novo (A)">Novo (A)</option>
+                <option value="Usado (A)">Usado (A)</option>
+            </select>
+
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" id="quantidade" name="quantidade">
+
+            <label for="responsavel">Responsável:</label>
+            <input type="text" id="responsavel" name="responsavel">
+
+            <label for="postoDestino">Posto de Destino:</label>
+            <input type="text" id="postoDestino" name="postoDestino">
+
+            <button type="button" onclick="submitEntrada()">Registrar Entrada</button>
+        </form>
+
+        <form id="saidaForm" class="hidden">
+            <h2>Formulário de Saída</h2>
+            <!-- Campos do formulário de saída -->
+            <button type="button" onclick="submitSaida()">Registrar Saída</button>
+        </form>
+
+        <form id="fornecedorForm" class="hidden">
+            <h2>Cadastro de Fornecedor</h2>
+            <!-- Campos do formulário de fornecedor -->
+            <button type="button" onclick="submitFornecedor()">Registrar Fornecedor</button>
+        </form>
+    </div>
+
+    <script>
+        const webAppUrl = 'https://script.google.com/macros/s/AKfycbyR7h2l45nLr59I73h5ugqCNNECxTb8Fug1R6fGod3lywajpegp1jLrfIzjgNslAdp8TQ/exec';
+
+        function submitLogin() {
+            const usuario = document.getElementById('usuario').value;
+            const senha = document.getElementById('senha').value;
+            
+            const data = { action: 'login', usuario: usuario, senha: senha };
+
+            fetch(webAppUrl, {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Login bem-sucedido!');
+                    document.getElementById('loginForm').classList.add('hidden');
+                    document.getElementById('dashboard').classList.remove('hidden');
+                } else {
+                    alert('Falha no login');
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+
+        function submitEntrada() {
+            const formData = {
+                action: 'registrarEntrada',
+                tipoItem: document.getElementById('tipoItem').value,
+                nome: document.getElementById('nome').value,
+                tamanho: document.getElementById('tamanho').value,
+                cor: document.getElementById('cor').value,
+                condicao: document.getElementById('condicao').value,
+                quantidade: document.getElementById('quantidade').value,
+                responsavel: document.getElementById('responsavel').value,
+                postoDestino: document.getElementById('postoDestino').value
+            };
+
+            fetch(webAppUrl, {
+                method: 'POST',
+                body: JSON.stringify(formData),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Entrada registrada com sucesso!');
+                } else {
+                    alert('Erro ao registrar entrada');
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+
+        function submitSaida() {
+            const formData = {
+                action: 'registrarSaida',
+                /* Captura os mesmos campos que o Formulário de Entrada */
+            };
+
+            fetch(webAppUrl, {
+                method: 'POST',
+                body: JSON.stringify(formData),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Saída registrada com sucesso!');
+                } else {
+                    alert('Erro ao registrar saída');
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+
+        function submitFornecedor() {
+            const formData = {
+                action: 'registrarFornecedor',
+                /* Captura os campos do formulário de fornecedor */
+            };
+
+            fetch(webAppUrl, {
+                method: 'POST',
+                body: JSON.stringify(formData),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Fornecedor registrado com sucesso!');
+                } else {
+                    alert('Erro ao registrar fornecedor');
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+    </script>
+</body>
+</html>
